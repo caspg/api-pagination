@@ -64,12 +64,17 @@ module ApiPagination
     end
 
     def pagy_from(collection, options)
+      unless ApiPagination.config.include_total
+        require 'pagy/extras/countless'
+        return Pagy::Countless.new(items: options[:per_page], page: options[:page])
+      end
+
       if options[:count]
         count = options[:count]
       else
         count = collection.is_a?(Array) ? collection.count : collection.count(:all)
       end
-      
+
       Pagy.new(count: count, items: options[:per_page], page: options[:page])
     end
 
